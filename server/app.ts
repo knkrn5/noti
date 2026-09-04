@@ -133,6 +133,7 @@ app.get("/signurl", async (req, res) => {
   const objectKey = req.query.objectKey as string;
   const method = req.query.method as string;
   const contentType = req.query.contentType as string;
+  const download = req.query.download === "true";
 
   if (!objectKey) {
     res.status(400).json({ message: "objectKey query parameter is required" });
@@ -152,6 +153,16 @@ app.get("/signurl", async (req, res) => {
     return;
   }
 
+  /* if (method === "GET" && !download) {
+    res
+      .status(400)
+      .json({
+        message:
+          "download query parameter is required for GET method",
+      });
+    return;
+  } */
+
   console.log(
     "objectKey",
     objectKey,
@@ -166,7 +177,7 @@ app.get("/signurl", async (req, res) => {
     if (method === "PUT") {
       url = await AwsService.createPutPresignedUrl(objectKey, contentType);
     } else if (method === "GET") {
-      url = await AwsService.createGetPresignedUrl(objectKey);
+      url = await AwsService.createGetPresignedUrl(objectKey, download);
     } else if (method === "DELETE") {
       url = await AwsService.createDeletePresignedUrl(objectKey);
     } else {
